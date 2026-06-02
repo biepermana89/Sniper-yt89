@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sniper YT — YouTube Research Pro</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #f0b429;
+    --accent2: #e85d04;
+    --blue: #4361ee;
+    --green: #06d6a0;
+    --red: #ef233c;
+    --text: #e8e8f0;
+    --text2: #8888aa;
+    --text3: #5555770;
+    --card: #13131e;
+    --hover: #1e1e2e;
+    --radius: 12px;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'Space Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow-y: auto;
+    transition: width 0.3s;
+  }
+
+  .logo {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-title {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .logo-sub {
+    font-size: 10px;
+    color: var(--text2);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-section {
+    padding: 12px 0 4px;
+  }
+
+  .nav-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--text2);
+    padding: 0 18px 6px;
+    text-transform: uppercase;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text2);
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .nav-item:hover { background: var(--hover); color: var(--text); }
+  .nav-item.active { background: var(--hover); color: var(--accent); border-left-color: var(--accent); }
+  .nav-item .icon { width: 16px; text-align: center; font-size: 14px; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--red);
+    color: #fff;
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  .nav-badge.green { background: var(--green); color: #000; }
+
+  /* MAIN */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* TOPBAR */
+  #topbar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .page-title {
+    font-size: 16px;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .api-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .api-status.active { border-color: var(--green); color: var(--green); }
+  .api-status.inactive { border-color: var(--red); color: var(--red); }
+  .api-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .btn {
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    font-family: var(--font);
+  }
+
+  .btn-accent { background: var(--accent); color: #000; }
+  .btn-accent:hover { background: #e0a820; }
+  .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--hover); color: var(--text); }
+  .btn-blue { background: var(--blue); color: #fff; }
+  .btn-blue:hover { background: #3451d1; }
+
+  /* CONTENT */
+  #content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+  }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* FILTER BAR */
+  .filter-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .filter-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text2);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .filter-input, .filter-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .filter-input:focus, .filter-select:focus { border-color: var(--accent); }
+  .filter-input { width: 220px; }
+  .filter-select { min-width: 140px; }
+  .filter-select option { background: var(--bg3); }
+
+  /* RESULTS INFO */
+  .results-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .results-count {
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .results-count span { color: var(--accent); font-weight: 600; }
+
+  .results-actions { display: flex; gap: 8px; }
+
+  /* VIDEO GRID */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  .video-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .video-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .video-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: var(--bg3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .video-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  .video-duration {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .viral-score {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: var(--accent);
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: var(--mono);
+  }
+
+  .video-info { padding: 12px; }
+
+  .video-channel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .channel-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .channel-name {
+    font-size: 11px;
+    color: var(--text2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .video-title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .video-stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .stat.highlight { color: var(--accent); font-weight: 600; }
+  .stat.green { color: var(--green); }
+  .stat.red { color: var(--red); }
+
+  .viral-bar {
+    height: 3px;
+    background: var(--bg3);
+    border-radius: 2px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .viral-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--accent));
+    border-radius: 2px;
+    transition: width 0.5s;
+  }
+
+  .video-actions {
+    display: flex;
+    gap: 6px;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+  }
+
+  .action-btn {
+    flex: 1;
+    padding: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    font-size: 11px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    font-family: var(--font);
+  }
+
+  .action-btn:hover { background: var(--hover); color: var(--text); border-color: var(--accent); }
+
+  /* DASHBOARD */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .dash-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+
+  .dash-card-label { font-size: 11px; color: var(--text2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .dash-card-value { font-size: 24px; font-weight: 700; font-family: var(--mono); }
+  .dash-card-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
+  .dash-card-value.accent { color: var(--accent); }
+  .dash-card-value.green { color: var(--green); }
+  .dash-card-value.blue { color: var(--blue); }
+  .dash-card-value.red { color: var(--red); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 560px;
+    max-width: 95vw;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-close {
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 18px;
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-family: var(--font);
+  }
+
+  .modal-close:hover { color: var(--text); }
+
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .form-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: var(--mono);
+    outline: none;
+  }
+
+  .form-input:focus { border-color: var(--accent); }
+  .form-hint { font-size: 11px; color: var(--text2); margin-top: 5px; }
+
+  /* LOADING */
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 16px;
+    color: var(--text2);
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+  }
+
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .empty-sub { font-size: 13px; }
+
+  /* ANALYSIS MODAL */
+  .analysis-section { margin-bottom: 20px; }
+  .analysis-title { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .analysis-text { font-size: 13px; line-height: 1.7; color: var(--text); }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .tag.accent { border-color: var(--accent); color: var(--accent); background: rgba(240,180,41,0.1); }
+
+  /* TRANSCRIPT */
+  .transcript-text {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+  }
+
+  /* TABS */
+  .tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text2);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* KEYWORD TABLE */
+  .kw-table { width: 100%; border-collapse: collapse; }
+  .kw-table th {
+    background: var(--bg3);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .kw-table td {
+    padding: 10px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .kw-table tr:hover td { background: var(--hover); }
+
+  .competition-bar {
+    height: 4px;
+    background: var(--bg3);
+    border-radius: 2px;
+    width: 80px;
+    overflow: hidden;
+  }
+  .competition-fill { height: 100%; border-radius: 2px; }
+  .competition-fill.low { background: var(--green); }
+  .competition-fill.mid { background: var(--accent); }
+  .competition-fill.high { background: var(--red); }
+
+  /* BULK */
+  .bulk-input {
+    width: 100%;
+    height: 120px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    resize: vertical;
+    outline: none;
+    margin-bottom: 12px;
+  }
+  .bulk-input:focus { border-color: var(--accent); }
+
+  .bulk-result {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  /* SETTINGS */
+  .settings-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+  .settings-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .settings-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .settings-row-label { font-size: 13px; }
+  .settings-row-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--green);
+    color: #000;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { background: var(--red); color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="logo">
+    <div class="logo-title">⚡ SNIPER YT</div>
+    <div class="logo-sub">YouTube Research Pro</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Menu Utama</div>
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <span class="icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('pencarian')">
+      <span class="icon">🔍</span> Pencarian
+    </div>
+    <div class="nav-item" onclick="showPage('live')">
+      <span class="icon">🔴</span> Live Terbaru
+      <span class="nav-badge">LIVE</span>
+    </div>
+    <div class="nav-item" onclick="showPage('trending')">
+      <span class="icon">🔥</span> Trending
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Analisis</div>
+    <div class="nav-item" onclick="showPage('bulk')">
+      <span class="icon">📦</span> Bulk Analisis
+    </div>
+    <div class="nav-item" onclick="showPage('keyword')">
+      <span class="icon">🎯</span> Kata Kunci
+    </div>
+    <div class="nav-item" onclick="showPage('niche')">
+      <span class="icon">💡</span> Niche Finder
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Tools</div>
+    <div class="nav-item" onclick="showPage('channel')">
+      <span class="icon">📺</span> Analisis Channel
+    </div>
+    <div class="nav-item" onclick="showPage('kompetitor')">
+      <span class="icon">🎯</span> Bidik Kompetitor
+    </div>
+    <div class="nav-item" onclick="showPage('favorit')">
+      <span class="icon">⭐</span> Video Favorit
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Sistem</div>
+    <div class="nav-item" onclick="showPage('settings')">
+      <span class="icon">🔑</span> API Keys
+    </div>
+    <div class="nav-item" onclick="showPage('pengaturan')">
+      <span class="icon">⚙️</span> Pengaturan
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div class="page-title" id="page-title">Dashboard</div>
+    <div class="api-status inactive" id="api-status-btn" onclick="showPage('settings')">
+      <div class="api-dot"></div>
+      <span id="api-status-text">API Tidak Aktif</span>
+    </div>
+    <button class="btn btn-ghost" onclick="refreshPage()">↻ Refresh</button>
+  </div>
+
+  <div id="content">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-label">Total Pencarian</div>
+          <div class="dash-card-value accent" id="stat-searches">0</div>
+          <div class="dash-card-sub">Sesi ini</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-label">Video Dianalisis</div>
+          <div class="dash-card-value green" id="stat-analyzed">0</div>
+          <div class="dash-card-sub">Total</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-label">Favorit Disimpan</div>
+          <div class="dash-card-value blue" id="stat-favorites">0</div>
+          <div class="dash-card-sub">Video</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-label">Keyword Tersimpan</div>
+          <div class="dash-card-value" id="stat-keywords">0</div>
+          <div class="dash-card-sub">Total</div>
+        </div>
+      </div>
+
+      <div class="dash-card" style="margin-bottom:16px; padding:20px;">
+        <div class="settings-title">🚀 Selamat Datang di Sniper YT</div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.8;">
+          Riset YouTube profesional dengan AI. Mulai dengan memasukkan API Key YouTube dan Gemini di menu <strong style="color:var(--accent)">API Keys</strong>, lalu gunakan fitur Pencarian untuk mulai riset video.
+          <br><br>
+          <strong style="color:var(--text)">Fitur Utama:</strong><br>
+          🔍 Pencarian dengan filter lengkap (lokasi, kategori, durasi, VPH)<br>
+          🔥 Video trending real-time<br>
+          🤖 Analisis AI dengan Gemini (judul, hook, strategi)<br>
+          📝 Transkrip otomatis video<br>
+          🎯 Riset kata kunci & kompetitor
+        </div>
+      </div>
+
+      <div class="dash-card" id="recent-searches-card">
+        <div class="settings-title">🕐 Pencarian Terakhir</div>
+        <div id="recent-searches" style="font-size:13px; color:var(--text2);">Belum ada pencarian. Mulai cari video di menu Pencarian.</div>
+      </div>
+    </div>
+
+    <!-- PENCARIAN -->
+    <div id="page-pencarian" class="page">
+      <div class="filter-bar">
+        <div class="filter-group">
+          <div class="filter-label">Kata Kunci</div>
+          <input class="filter-input" id="search-query" placeholder="cari video..." onkeydown="if(event.key==='Enter')searchVideos()">
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Lokasi</div>
+          <select class="filter-select" id="search-region">
+            <option value="">Semua Negara</option>
+            <option value="ID">🇮🇩 Indonesia</option>
+            <option value="US">🇺🇸 Amerika Serikat</option>
+            <option value="JP">🇯🇵 Jepang</option>
+            <option value="GB">🇬🇧 Inggris</option>
+            <option value="MY">🇲🇾 Malaysia</option>
+            <option value="SG">🇸🇬 Singapura</option>
+            <option value="AU">🇦🇺 Australia</option>
+            <option value="KR">🇰🇷 Korea</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Kategori</div>
+          <select class="filter-select" id="search-category">
+            <option value="">Semua Kategori</option>
+            <option value="10">Musik</option>
+            <option value="20">Gaming</option>
+            <option value="22">People & Blog</option>
+            <option value="23">Comedy</option>
+            <option value="24">Entertainment</option>
+            <option value="25">News</option>
+            <option value="26">How-to</option>
+            <option value="28">Science & Tech</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Durasi</div>
+          <select class="filter-select" id="search-duration">
+            <option value="">Semua</option>
+            <option value="short">Pendek (&lt;4m)</option>
+            <option value="medium">Sedang (4-20m)</option>
+            <option value="long">Panjang (&gt;20m)</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Upload</div>
+          <select class="filter-select" id="search-upload">
+            <option value="">Semua Waktu</option>
+            <option value="hour">1 Jam Lalu</option>
+            <option value="today">Hari Ini</option>
+            <option value="week">Minggu Ini</option>
+            <option value="month">Bulan Ini</option>
+            <option value="year">Tahun Ini</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Urutan</div>
+          <select class="filter-select" id="search-order">
+            <option value="relevance">Relevansi</option>
+            <option value="date">Terbaru</option>
+            <option value="viewCount">View Terbanyak</option>
+            <option value="rating">Rating</option>
+          </select>
+        </div>
+        <button class="btn btn-accent" onclick="searchVideos()">🔍 Snipe</button>
+      </div>
+
+      <div class="results-info" id="results-info" style="display:none">
+        <div class="results-count" id="results-count"></div>
+        <div class="results-actions">
+          <button class="btn btn-ghost" onclick="sortByVPH()">📈 VPH Tertinggi</button>
+          <button class="btn btn-ghost" onclick="exportCSV()">📥 CSV</button>
+        </div>
+      </div>
+
+      <div id="search-results">
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">Siap Berburu Video</div>
+          <div class="empty-sub">Masukkan kata kunci dan klik Snipe</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE -->
+    <div id="page-live" class="page">
+      <div style="margin-bottom:16px; display:flex; gap:10px; align-items:center;">
+        <select class="filter-select" id="live-region">
+          <option value="ID">🇮🇩 Indonesia</option>
+          <option value="US">🇺🇸 Amerika</option>
+          <option value="JP">🇯🇵 Jepang</option>
+          <option value="GB">🇬🇧 Inggris</option>
+        </select>
+        <button class="btn btn-accent" onclick="fetchLive()">🔴 Cari Live</button>
+      </div>
+      <div id="live-results">
+        <div class="empty-state">
+          <div class="empty-icon">🔴</div>
+          <div class="empty-title">Video Live Terbaru</div>
+          <div class="empty-sub">Klik "Cari Live" untuk melihat video live sekarang</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRENDING -->
+    <div id="page-trending" class="page">
+      <div style="margin-bottom:16px; display:flex; gap:10px; align-items:center;">
+        <select class="filter-select" id="trending-region">
+          <option value="ID">🇮🇩 Indonesia</option>
+          <option value="US">🇺🇸 Amerika</option>
+          <option value="JP">🇯🇵 Jepang</option>
+          <option value="GB">🇬🇧 Inggris</option>
+          <option value="MY">🇲🇾 Malaysia</option>
+        </select>
+        <select class="filter-select" id="trending-cat">
+          <option value="0">Semua</option>
+          <option value="10">Musik</option>
+          <option value="20">Gaming</option>
+          <option value="24">Entertainment</option>
+          <option value="25">News</option>
+          <option value="28">Tech</option>
+        </select>
+        <button class="btn btn-accent" onclick="fetchTrending()">🔥 Lihat Trending</button>
+      </div>
+      <div id="trending-results">
+        <div class="empty-state">
+          <div class="empty-icon">🔥</div>
+          <div class="empty-title">Video Trending</div>
+          <div class="empty-sub">Pilih negara dan klik "Lihat Trending"</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BULK ANALISIS -->
+    <div id="page-bulk" class="page">
+      <div class="settings-card">
+        <div class="settings-title">📦 Bulk Analisis Video</div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:12px;">Masukkan URL atau ID video YouTube (satu per baris, maksimal 10 video)</div>
+        <textarea class="bulk-input" id="bulk-input" placeholder="https://youtube.com/watch?v=...&#10;https://youtube.com/watch?v=...&#10;atau langsung ID: dQw4w9WgXcQ"></textarea>
+        <button class="btn btn-accent" onclick="bulkAnalyze()">🤖 Analisis Semua dengan AI</button>
+      </div>
+      <div id="bulk-results"></div>
+    </div>
+
+    <!-- KEYWORD -->
+    <div id="page-keyword" class="page">
+      <div class="settings-card">
+        <div class="settings-title">🎯 Riset Kata Kunci</div>
+        <div style="display:flex; gap:10px; margin-bottom:0;">
+          <input class="filter-input" id="kw-input" placeholder="masukkan kata kunci..." style="flex:1;" onkeydown="if(event.key==='Enter')researchKeyword()">
+          <select class="filter-select" id="kw-region">
+            <option value="ID">🇮🇩 Indonesia</option>
+            <option value="US">🇺🇸 Global</option>
+          </select>
+          <button class="btn btn-accent" onclick="researchKeyword()">🔍 Riset</button>
+        </div>
+      </div>
+      <div id="keyword-results">
+        <div class="empty-state">
+          <div class="empty-icon">🎯</div>
+          <div class="empty-title">Riset Kata Kunci</div>
+          <div class="empty-sub">Temukan keyword dengan kompetisi rendah dan volume tinggi</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NICHE FINDER -->
+    <div id="page-niche" class="page">
+      <div class="settings-card">
+        <div class="settings-title">💡 Niche Finder</div>
+        <div style="display:flex; gap:10px;">
+          <input class="filter-input" id="niche-input" placeholder="topik atau niche..." style="flex:1;" onkeydown="if(event.key==='Enter')findNiche()">
+          <button class="btn btn-accent" onclick="findNiche()">💡 Analisis Niche</button>
+        </div>
+      </div>
+      <div id="niche-results">
+        <div class="empty-state">
+          <div class="empty-icon">💡</div>
+          <div class="empty-title">Temukan Niche Potensial</div>
+          <div class="empty-sub">AI akan menganalisis potensi niche dengan data YouTube</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHANNEL ANALISIS -->
+    <div id="page-channel" class="page">
+      <div class="settings-card">
+        <div class="settings-title">📺 Analisis Channel</div>
+        <div style="display:flex; gap:10px;">
+          <input class="filter-input" id="channel-input" placeholder="URL atau ID channel..." style="flex:1;" onkeydown="if(event.key==='Enter')analyzeChannel()">
+          <button class="btn btn-accent" onclick="analyzeChannel()">📊 Analisis</button>
+        </div>
+      </div>
+      <div id="channel-results">
+        <div class="empty-state">
+          <div class="empty-icon">📺</div>
+          <div class="empty-title">Analisis Channel YouTube</div>
+          <div class="empty-sub">Lihat statistik, tren, dan strategi konten channel</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KOMPETITOR -->
+    <div id="page-kompetitor" class="page">
+      <div class="settings-card">
+        <div class="settings-title">🎯 Bidik Kompetitor</div>
+        <div style="display:flex; gap:10px;">
+          <input class="filter-input" id="kompetitor-input" placeholder="niche atau topik kompetitor..." style="flex:1;" onkeydown="if(event.key==='Enter')findKompetitor()">
+          <button class="btn btn-accent" onclick="findKompetitor()">🎯 Cari Kompetitor</button>
+        </div>
+      </div>
+      <div id="kompetitor-results">
+        <div class="empty-state">
+          <div class="empty-icon">🎯</div>
+          <div class="empty-title">Temukan & Analisis Kompetitor</div>
+          <div class="empty-sub">Cari channel kompetitor di niche kamu dan pelajari strategi mereka</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAVORIT -->
+    <div id="page-favorit" class="page">
+      <div class="results-info">
+        <div class="results-count">Video Tersimpan: <span id="fav-count">0</span></div>
+        <button class="btn btn-ghost" onclick="clearFavorites()">🗑 Hapus Semua</button>
+      </div>
+      <div id="favorit-results">
+        <div class="empty-state">
+          <div class="empty-icon">⭐</div>
+          <div class="empty-title">Belum Ada Favorit</div>
+          <div class="empty-sub">Simpan video dari hasil pencarian untuk ditampilkan di sini</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS / API KEYS -->
+    <div id="page-settings" class="page">
+      <div class="settings-card">
+        <div class="settings-title">🔑 API Keys</div>
+        <div class="form-group">
+          <label class="form-label">YouTube Data API v3</label>
+          <input class="form-input" id="yt-api-key" type="password" placeholder="AIza...">
+          <div class="form-hint">Dapatkan di: console.cloud.google.com → YouTube Data API v3</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Gemini API Key</label>
+          <input class="form-input" id="gemini-api-key" type="password" placeholder="AIza...">
+          <div class="form-hint">Dapatkan di: aistudio.google.com/app/apikey</div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:4px;">
+          <button class="btn btn-accent" onclick="saveAPIKeys()">💾 Simpan API Keys</button>
+          <button class="btn btn-ghost" onclick="testAPIKeys()">🔄 Test Koneksi</button>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-title">ℹ️ Cara Mendapatkan API Key</div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.9;">
+          <strong style="color:var(--text)">YouTube API v3:</strong><br>
+          1. Buka <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent)">console.cloud.google.com</a><br>
+          2. Buat project baru atau pilih yang ada<br>
+          3. Aktifkan "YouTube Data API v3"<br>
+          4. Buat Credentials → API Key<br>
+          5. Copy dan paste di atas<br><br>
+          <strong style="color:var(--text)">Gemini API:</strong><br>
+          1. Buka <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent)">aistudio.google.com/app/apikey</a><br>
+          2. Klik "Create API Key"<br>
+          3. Copy dan paste di atas
+        </div>
+      </div>
+    </div>
+
+    <!-- PENGATURAN -->
+    <div id="page-pengaturan" class="page">
+      <div class="settings-card">
+        <div class="settings-title">⚙️ Pengaturan Umum</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Hasil per Pencarian</div>
+            <div class="settings-row-sub">Jumlah video yang ditampilkan</div>
+          </div>
+          <select class="filter-select" id="setting-maxresults">
+            <option value="12">12 video</option>
+            <option value="24" selected>24 video</option>
+            <option value="48">48 video</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Bahasa Analisis AI</div>
+            <div class="settings-row-sub">Bahasa output Gemini</div>
+          </div>
+          <select class="filter-select" id="setting-lang">
+            <option value="id" selected>Bahasa Indonesia</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Hitung VPH Otomatis</div>
+            <div class="settings-row-sub">Views Per Hour untuk setiap video</div>
+          </div>
+          <input type="checkbox" id="setting-vph" checked style="width:16px;height:16px;accent-color:var(--accent)">
+        </div>
+        <div style="margin-top:16px;">
+          <button class="btn btn-accent" onclick="savePengaturan()">💾 Simpan Pengaturan</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ANALYSIS MODAL -->
+<div class="modal-overlay" id="modal-analysis">
+  <div class="modal">
+    <div class="modal-title">
+      <span>🤖 Analisis Video</span>
+      <button class="modal-close" onclick="closeModal('modal-analysis')">✕</button>
+    </div>
+    <div id="modal-analysis-content"></div>
+  </div>
+</div>
+
+<!-- TRANSCRIPT MODAL -->
+<div class="modal-overlay" id="modal-transcript">
+  <div class="modal">
+    <div class="modal-title">
+      <span>📝 Transkrip Video</span>
+      <button class="modal-close" onclick="closeModal('modal-transcript')">✕</button>
+    </div>
+    <div id="modal-transcript-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// STATE
+let state = {
+  ytKey: localStorage.getItem('yt_api_key') || '',
+  geminiKey: localStorage.getItem('gemini_api_key') || '',
+  searches: parseInt(localStorage.getItem('stat_searches') || '0'),
+  analyzed: parseInt(localStorage.getItem('stat_analyzed') || '0'),
+  favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
+  keywords: JSON.parse(localStorage.getItem('keywords') || '[]'),
+  lastResults: [],
+  settings: JSON.parse(localStorage.getItem('settings') || '{"maxResults":24,"lang":"id","vph":true}')
+};
+
+// INIT
+window.onload = () => {
+  if (state.ytKey) document.getElementById('yt-api-key').value = state.ytKey;
+  if (state.geminiKey) document.getElementById('gemini-api-key').value = state.geminiKey;
+  updateAPIStatus();
+  updateStats();
+  renderFavorites();
+};
+
+function updateAPIStatus() {
+  const btn = document.getElementById('api-status-btn');
+  const txt = document.getElementById('api-status-text');
+  if (state.ytKey) {
+    btn.className = 'api-status active';
+    txt.textContent = 'API Aktif';
+  } else {
+    btn.className = 'api-status inactive';
+    txt.textContent = 'API Tidak Aktif';
+  }
+}
+
+function updateStats() {
+  document.getElementById('stat-searches').textContent = state.searches;
+  document.getElementById('stat-analyzed').textContent = state.analyzed;
+  document.getElementById('stat-favorites').textContent = state.favorites.length;
+  document.getElementById('stat-keywords').textContent = state.keywords.length;
+  document.getElementById('fav-count').textContent = state.favorites.length;
+}
+
+// NAVIGATION
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const titles = {
+    dashboard: 'Dashboard', pencarian: 'Pencarian Video', live: 'Live Terbaru',
+    trending: 'Trending', bulk: 'Bulk Analisis', keyword: 'Riset Kata Kunci',
+    niche: 'Niche Finder', channel: 'Analisis Channel', kompetitor: 'Bidik Kompetitor',
+    favorit: 'Video Favorit', settings: 'API Keys', pengaturan: 'Pengaturan'
+  };
+  document.getElementById('page-title').textContent = titles[page] || page;
+  event.currentTarget && event.currentTarget.classList.add('active');
+}
+
+function refreshPage() { showToast('Halaman diperbarui'); }
+
+// YOUTUBE API
+async function ytFetch(endpoint, params) {
+  if (!state.ytKey) { showToast('API Key belum diset! Buka menu API Keys.', true); return null; }
+  params.key = state.ytKey;
+  const url = 'https://www.googleapis.com/youtube/v3/' + endpoint + '?' + new URLSearchParams(params);
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.error) { showToast('Error API: ' + data.error.message, true); return null; }
+    return data;
+  } catch(e) { showToast('Gagal terhubung ke YouTube API', true); return null; }
+}
+
+// GEMINI API
+async function geminiAsk(prompt) {
+  if (!state.geminiKey) return 'Gemini API Key belum diset.';
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${state.geminiKey}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const data = await res.json();
+    if (data.error) return 'Error Gemini: ' + data.error.message;
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Tidak ada respons';
+  } catch(e) { return 'Gagal menghubungi Gemini API'; }
+}
+
+// CALCULATE VPH
+function calcVPH(views, publishedAt) {
+  const hours = (Date.now() - new Date(publishedAt)) / 3600000;
+  return hours > 0 ? Math.round(views / hours) : 0;
+}
+
+function calcViralScore(vph, views) {
+  const score = Math.min(100, Math.round((vph / 1000) * 10 + (views / 100000) * 5));
+  return score;
+}
+
+function formatNum(n) {
+  n = parseInt(n) || 0;
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return n.toString();
+}
+
+function timeAgo(dateStr) {
+  const diff = (Date.now() - new Date(dateStr)) / 1000;
+  if (diff < 3600) return Math.round(diff/60) + 'm lalu';
+  if (diff < 86400) return Math.round(diff/3600) + 'j lalu';
+  if (diff < 2592000) return Math.round(diff/86400) + 'h lalu';
+  if (diff < 31536000) return Math.round(diff/2592000) + 'bln lalu';
+  return Math.round(diff/31536000) + 'thn lalu';
+}
+
+function parseDuration(iso) {
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  const h = parseInt(m[1]||0), min = parseInt(m[2]||0), s = parseInt(m[3]||0);
+  if (h) return `${h}:${String(min).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  return `${min}:${String(s).padStart(2,'0')}`;
+}
+
+// RENDER VIDEO CARD
+function renderVideoCard(video, showSave = true) {
+  const vph = calcVPH(video.views, video.publishedAt);
+  const viral = calcViralScore(vph, video.views);
+  const isFav = state.favorites.some(f => f.id === video.id);
+  return `
+    <div class="video-card" id="card-${video.id}">
+      <div class="video-thumb">
+        <img src="${video.thumb}" alt="" loading="lazy" onerror="this.style.background='var(--bg3)'">
+        <div class="video-duration">${video.duration || '0:00'}</div>
+        <div class="viral-score">${viral}/100</div>
+      </div>
+      <div class="video-info">
+        <div class="video-channel">
+          <div class="channel-avatar">${(video.channel||'?')[0].toUpperCase()}</div>
+          <div class="channel-name">${video.channel}</div>
+        </div>
+        <div class="video-title">${video.title}</div>
+        <div class="video-stats">
+          <div class="stat highlight">👁 ${formatNum(video.views)}</div>
+          <div class="stat green">⚡ ${formatNum(vph)} VPH</div>
+          <div class="stat">👍 ${formatNum(video.likes)}</div>
+          <div class="stat">💬 ${formatNum(video.comments)}</div>
+          <div class="stat">🕐 ${timeAgo(video.publishedAt)}</div>
+        </div>
+        <div class="viral-bar"><div class="viral-fill" style="width:${viral}%"></div></div>
+        <div style="font-size:10px;color:var(--text2);margin-bottom:8px;">Viral Score: ${viral}/100</div>
+        <div class="video-actions">
+          <button class="action-btn" onclick="openAnalysis('${video.id}')">📊 Analisis</button>
+          <button class="action-btn" onclick="openTranscript('${video.id}')">📝 Transkrip</button>
+          ${showSave ? `<button class="action-btn ${isFav?'':''}\" onclick="toggleFavorite('${video.id}')" id="fav-btn-${video.id}">${isFav?'★ Tersimpan':'☆ Simpan'}</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+// SEARCH
+async function searchVideos() {
+  const q = document.getElementById('search-query').value.trim();
+  if (!q) { showToast('Masukkan kata kunci dulu', true); return; }
+
+  const region = document.getElementById('search-region').value;
+  const category = document.getElementById('search-category').value;
+  const duration = document.getElementById('search-duration').value;
+  const upload = document.getElementById('search-upload').value;
+  const order = document.getElementById('search-order').value;
+  const maxResults = state.settings.maxResults || 24;
+
+  document.getElementById('search-results').innerHTML = '<div class="loading"><div class="spinner"></div><div>Mencari video...</div></div>';
+  document.getElementById('results-info').style.display = 'none';
+
+  const params = { part: 'snippet', type: 'video', q, maxResults, order };
+  if (region) params.regionCode = region;
+  if (category) params.videoCategoryId = category;
+  if (duration) params.videoDuration = duration;
+  if (upload) {
+    const now = new Date();
+    const map = { hour: 1, today: 24, week: 168, month: 720, year: 8760 };
+    const after = new Date(now - map[upload] * 3600000);
+    params.publishedAfter = after.toISOString();
+  }
+
+  const searchData = await ytFetch('search', params);
+  if (!searchData || !searchData.items?.length) {
+    document.getElementById('search-results').innerHTML = '<div class="empty-state"><div class="empty-icon">😔</div><div class="empty-title">Tidak Ditemukan</div><div class="empty-sub">Coba kata kunci lain</div></div>';
+    return;
+  }
+
+  const ids = searchData.items.map(i => i.id.videoId).filter(Boolean).join(',');
+  const statsData = await ytFetch('videos', { part: 'statistics,contentDetails,snippet', id: ids });
+
+  if (!statsData) return;
+
+  const videos = statsData.items.map(item => ({
+    id: item.id,
+    title: item.snippet.title,
+    channel: item.snippet.channelTitle,
+    thumb: item.snippet.thumbnails?.medium?.url || '',
+    publishedAt: item.snippet.publishedAt,
+    views: item.statistics.viewCount || 0,
+    likes: item.statistics.likeCount || 0,
+    comments: item.statistics.commentCount || 0,
+    duration: parseDuration(item.contentDetails.duration || 'PT0S'),
+    description: item.snippet.description
+  }));
+
+  state.lastResults = videos;
+  state.searches++;
+  localStorage.setItem('stat_searches', state.searches);
+  updateStats();
+
+  // Recent searches
+  const recentEl = document.getElementById('recent-searches');
+  recentEl.innerHTML = `<span style="color:var(--accent)">${q}</span> — ${videos.length} video ditemukan`;
+
+  renderVideoGrid(videos, 'search-results');
+
+  const totalEst = searchData.pageInfo?.totalResults || videos.length;
+  document.getElementById('results-info').style.display = 'flex';
+  document.getElementById('results-count').innerHTML = `<span>${videos.length}</span> video dari ~${formatNum(totalEst)} hasil`;
+}
+
+function renderVideoGrid(videos, containerId) {
+  const container = document.getElementById(containerId);
+  if (!videos.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">😔</div><div class="empty-title">Tidak ada video</div></div>';
+    return;
+  }
+  container.innerHTML = '<div class="video-grid">' + videos.map(v => renderVideoCard(v)).join('') + '</div>';
+}
+
+function sortByVPH() {
+  const sorted = [...state.lastResults].sort((a,b) => calcVPH(b.views, b.publishedAt) - calcVPH(a.views, a.publishedAt));
+  renderVideoGrid(sorted, 'search-results');
+}
+
+async function exportCSV() {
+  if (!state.lastResults.length) { showToast('Tidak ada data untuk diekspor', true); return; }
+  const headers = ['Judul','Channel','Views','Likes','Komentar','VPH','Durasi','Upload'];
+  const rows = state.lastResults.map(v => [
+    `"${v.title.replace(/"/g,'""')}"`, v.channel, v.views, v.likes, v.comments,
+    calcVPH(v.views, v.publishedAt), v.duration, v.publishedAt
+  ]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sniper-yt-export.csv';
+  a.click();
+  showToast('CSV berhasil diekspor!');
+}
+
+// LIVE
+async function fetchLive() {
+  const region = document.getElementById('live-region').value;
+  document.getElementById('live-results').innerHTML = '<div class="loading"><div class="spinner"></div><div>Mencari video live...</div></div>';
+
+  const data = await ytFetch('search', { part: 'snippet', type: 'video', eventType: 'live', regionCode: region, maxResults: 20, order: 'viewCount' });
+  if (!data?.items?.length) {
+    document.getElementById('live-results').innerHTML = '<div class="empty-state"><div class="empty-icon">😔</div><div class="empty-title">Tidak ada live saat ini</div></div>';
+    return;
+  }
+
+  const ids = data.items.map(i => i.id.videoId).join(',');
+  const stats = await ytFetch('videos', { part: 'statistics,snippet,liveStreamingDetails', id: ids });
+  if (!stats) return;
+
+  const videos = stats.items.map(item => ({
+    id: item.id,
+    title: item.snippet.title,
+    channel: item.snippet.channelTitle,
+    thumb: item.snippet.thumbnails?.medium?.url || '',
+    publishedAt: item.snippet.publishedAt,
+    views: item.liveStreamingDetails?.concurrentViewers || item.statistics.viewCount || 0,
+    likes: item.statistics.likeCount || 0,
+    comments: item.statistics.commentCount || 0,
+    duration: 'LIVE',
+  }));
+
+  document.getElementById('live-results').innerHTML = '<div class="video-grid">' + videos.map(v => renderVideoCard(v)).join('') + '</div>';
+}
+
+// TRENDING
+async function fetchTrending() {
+  const region = document.getElementById('trending-region').value;
+  const cat = document.getElementById('trending-cat').value;
+  document.getElementById('trending-results').innerHTML = '<div class="loading"><div class="spinner"></div><div>Memuat trending...</div></div>';
+
+  const params = { part: 'snippet,statistics,contentDetails', chart: 'mostPopular', regionCode: region, maxResults: 24 };
+  if (cat !== '0') params.videoCategoryId = cat;
+
+  const data = await ytFetch('videos', params);
+  if (!data?.items?.length) {
+    document.getElementById('trending-results').innerHTML = '<div class="empty-state"><div class="empty-icon">😔</div><div class="empty-title">Tidak ada data trending</div></div>';
+    return;
+  }
+
+  const videos = data.items.map(item => ({
+    id: item.id,
+    title: item.snippet.title,
+    channel: item.snippet.channelTitle,
+    thumb: item.snippet.thumbnails?.medium?.url || '',
+    publishedAt: item.snippet.publishedAt,
+    views: item.statistics.viewCount || 0,
+    likes: item.statistics.likeCount || 0,
+    comments: item.statistics.commentCount || 0,
+    duration: parseDuration(item.contentDetails.duration || 'PT0S'),
+  }));
+
+  document.getElementById('trending-results').innerHTML = '<div class="video-grid">' + videos.map(v => renderVideoCard(v)).join('') + '</div>';
+}
+
+// BULK ANALISIS
+async function bulkAnalyze() {
+  const input = document.getElementById('bulk-input').value.trim();
+  if (!input) { showToast('Masukkan URL atau ID video dulu', true); return; }
+
+  const lines = input.split('\n').filter(l => l.trim());
+  const ids = lines.map(line => {
+    const match = line.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return match ? match[1] : line.trim().substring(0, 11);
+  }).filter(id => id.length === 11).slice(0, 10);
+
+  if (!ids.length) { showToast('Format URL tidak valid', true); return; }
+
+  document.getElementById('bulk-results').innerHTML = '<div class="loading"><div class="spinner"></div><div>Menganalisis ' + ids.length + ' video dengan AI...</div></div>';
+
+  const data = await ytFetch('videos', { part: 'snippet,statistics,contentDetails', id: ids.join(',') });
+  if (!data?.items) return;
+
+  let html = '';
+  for (const item of data.items) {
+    const vph = calcVPH(item.statistics.viewCount, item.snippet.publishedAt);
+    const viral = calcViralScore(vph, item.statistics.viewCount);
+    html += `
+      <div class="bulk-result">
+        <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;">
+          <img src="${item.snippet.thumbnails?.default?.url}" style="width:80px;border-radius:6px;">
+          <div>
+            <div style="font-weight:600;margin-bottom:4px;">${item.snippet.title}</div>
+            <div style="font-size:12px;color:var(--text2);">${item.snippet.channelTitle}</div>
+            <div class="video-stats" style="margin-top:6px;">
+              <div class="stat highlight">👁 ${formatNum(item.statistics.viewCount)}</div>
+              <div class="stat green">⚡ ${formatNum(vph)} VPH</div>
+              <div class="stat">Viral: ${viral}/100</div>
+            </div>
+          </div>
+        </div>
+        <div id="bulk-ai-${item.id}" style="font-size:12px;color:var(--text2);">Memuat analisis AI...</div>
+      </div>`;
+  }
+  document.getElementById('bulk-results').innerHTML = html;
+  state.analyzed += ids.length;
+  localStorage.setItem('stat_analyzed', state.analyzed);
+  updateStats();
+
+  // AI analysis for each
+  for (const item of data.items) {
+    const lang = state.settings.lang === 'id' ? 'Bahasa Indonesia' : 'English';
+    const prompt = `Analisis video YouTube ini dalam ${lang} secara singkat (3-4 kalimat):
+Judul: ${item.snippet.title}
+Channel: ${item.snippet.channelTitle}
+Views: ${formatNum(item.statistics.viewCount)}
+Likes: ${formatNum(item.statistics.likeCount)}
+VPH: ${calcVPH(item.statistics.viewCount, item.snippet.publishedAt)}
+Berikan insight tentang: potensi viral, kekuatan konten, dan saran singkat.`;
+    
+    const analysis = await geminiAsk(prompt);
+    const el = document.getElementById('bulk-ai-' + item.id);
+    if (el) el.innerHTML = `<div style="color:var(--text);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">🤖 ${analysis}</div>`;
+  }
+}
+
+// KEYWORD RESEARCH
+async function researchKeyword() {
+  const q = document.getElementById('kw-input').value.trim();
+  if (!q) { showToast('Masukkan kata kunci', true); return; }
+
+  document.getElementById('keyword-results').innerHTML = '<div class="loading"><div class="spinner"></div><div>Menganalisis kata kunci...</div></div>';
+
+  // Search for the keyword to get data
+  const data = await ytFetch('search', { part: 'snippet', type: 'video', q, maxResults: 10, order: 'relevance' });
+  if (!data?.items) return;
+
+  const ids = data.items.map(i => i.id.videoId).filter(Boolean).join(',');
+  const stats = await ytFetch('videos', { part: 'statistics,snippet', id: ids });
+
+  // Generate related keywords with AI
+  const lang = state.settings.lang === 'id' ? 'Bahasa Indonesia' : 'English';
+  const aiPrompt = `Berikan analisis riset kata kunci YouTube untuk "${q}" dalam ${lang}.
+Format respons sebagai JSON array dengan 8 keyword terkait, masing-masing dengan:
+- keyword: string
+- volume: "Tinggi"/"Sedang"/"Rendah"
+- competition: "Tinggi"/"Sedang"/"Rendah"  
+- potential: "Tinggi"/"Sedang"/"Rendah"
+- tip: string singkat (max 10 kata)
+Hanya return JSON array, tanpa teks lain.`;
+
+  const aiResult = await geminiAsk(aiPrompt);
+  let keywords = [];
+  try {
+    const clean = aiResult.replace(/```json|```/g, '').trim();
+    keywords = JSON.parse(clean);
+  } catch(e) {
+    keywords = [{ keyword: q, volume: 'Sedang', competition: 'Sedang', potential: 'Sedang', tip: 'Analisis manual diperlukan' }];
+  }
+
+  // Save to state
+  if (!state.keywords.includes(q)) {
+    state.keywords.push(q);
+    localStorage.setItem('keywords', JSON.stringify(state.keywords));
+    updateStats();
+  }
+
+  const avgViews = stats?.items ? stats.items.reduce((s,i) => s + parseInt(i.statistics.viewCount||0), 0) / stats.items.length : 0;
+
+  let html = `
+    <div class="settings-card" style="margin-bottom:14px;">
+      <div class="settings-title">📊 Overview: "${q}"</div>
+      <div class="video-stats">
+        <div class="stat highlight">📹 ${data.pageInfo?.totalResults?.toLocaleString() || '0'} video</div>
+        <div class="stat green">👁 Rata-rata ${formatNum(avgViews)} views</div>
+      </div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-title">🎯 Keyword Terkait (AI)</div>
+      <table class="kw-table">
+        <thead><tr>
+          <th>Kata Kunci</th><th>Volume</th><th>Kompetisi</th><th>Potensi</th><th>Tips</th>
+        </tr></thead>
+        <tbody>`;
+
+  keywords.forEach(kw => {
+    const compColor = kw.competition === 'Rendah' ? 'low' : kw.competition === 'Sedang' ? 'mid' : 'high';
+    const compWidth = kw.competition === 'Rendah' ? '30' : kw.competition === 'Sedang' ? '60' : '90';
+    html += `<tr>
+      <td><strong>${kw.keyword}</strong></td>
+      <td><span style="color:${kw.volume==='Tinggi'?'var(--green)':kw.volume==='Sedang'?'var(--accent)':'var(--text2)'}">${kw.volume}</span></td>
+      <td>
+        <div class="competition-bar"><div class="competition-fill ${compColor}" style="width:${compWidth}%"></div></div>
+        <div style="font-size:10px;color:var(--text2);margin-top:2px;">${kw.competition}</div>
+      </td>
+      <td><span style="color:${kw.potential==='Tinggi'?'var(--green)':kw.potential==='Sedang'?'var(--accent)':'var(--text2)'}">${kw.potential}</span></td>
+      <td style="font-size:11px;color:var(--text2);">${kw.tip}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div>';
+  document.getElementById('keyword-results').innerHTML = html;
+}
+
+// NICHE FINDER
+async function findNiche() {
+  const q = document.getElementById('niche-input').value.trim();
+  if (!q) { showToast('Masukkan topik niche', true); return; }
+
+  document.getElementById('niche-results').innerHTML = '<div class="loading"><div class="spinner"></div><div>Menganalisis niche dengan AI...</div></div>';
+
+  const lang = state.settings.lang === 'id' ? 'Bahasa Indonesia' : 'English';
+  const prompt = `Analisis potensi niche YouTube untuk "${q}" dalam ${lang}. Berikan:
+1. Tingkat persaingan (Rendah/Sedang/Tinggi) dan alasannya
+2. Potensi monetisasi (1-10)
+3. Estimasi penonton target
+4. 5 ide konten terbaik untuk niche ini
+5. Channel kompetitor yang bisa dipelajari
+6. Saran strategi untuk pemula
+7. Waktu terbaik upload
+Jawab dengan format terstruktur dan detail.`;
+
+  const analysis = await geminiAsk(prompt);
+
+  // Also get some videos for this niche
+  const data = await ytFetch('search', { part: 'snippet', type: 'video', q, maxResults: 6, order: 'viewCount' });
+
+  let html = `
+    <div class="settings-card" style="margin-bottom:14px;">
+      <div class="settings-title">🤖 Analisis AI: ${q}</div>
+      <div class="analysis-text" style="white-space:pre-wrap;">${analysis}</div>
+    </div>`;
+
+  if (data?.items?.length) {
+    const ids = data.items.map(i => i.id.videoId).filter(Boolean).join(',');
+    const stats = await ytFetch('videos', { part: 'statistics,contentDetails,snippet', id: ids });
+    if (stats?.items) {
+      const videos = stats.items.map(item => ({
+        id: item.id, title: item.snippet.title, channel: item.snippet.channelTitle,
+        thumb: item.snippet.thumbnails?.medium?.url || '', publishedAt: item.snippet.publishedAt,
+        views: item.statistics.viewCount || 0, likes: item.statistics.likeCount || 0,
+        comments: item.statistics.commentCount || 0, duration: parseDuration(item.contentDetails.duration || 'PT0S')
+      }));
+      html += `<div style="margin-top:4px;"><div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text2)">VIDEO POPULER DI NICHE INI</div>`;
+      html += '<div class="video-grid">' + videos.map(v => renderVideoCard(v)).join('') + '</div></div>';
+    }
+  }
+
+  document.getElementById('niche-results').innerHTML = html;
+}
+
+// CHANNEL ANALYSIS
+async function analyzeChannel() {
+  const input = document.getElementById('channel-input').value.trim();
+  if (!input) { showToast('Masukkan URL atau ID channel', true); return; }
+
+  document.getElementById('channel-results').innerHTML = '<div class="loading"><div class="spinner"></div><div>Menganalisis channel...</div></div>';
+
+  let channelId = input;
+  // Extract channel ID from URL
+  const match = input.match(/channel\/([UC][a-zA-Z0-9_-]+)/);
+  if (match) channelId = match[1];
+
+  // Try search by username if not a channel ID
+  let channelData;
+  if (channelId.startsWith('UC')) {
+    channelData = await ytFetch('channels', { part: 'snippet,statistics,brandingSettings', id: channelId });
+  } else {
+    channelData = await ytFetch('channels', { part: 'snippet,statistics,brandingSettings', forUsername: channelId });
+    if (!channelData?.items?.length) {
+      // Try search
+      const searchData = await ytFetch('search', { part: 'snippet', type: 'channel', q: channelId, maxResults: 1 });
+      if (searchData?.items?.length) {
+        channelId = searchData.items[0].snippet.channelId;
+        channelData = await ytFetch('channels', { part: 'snippet,statistics,brandingSettings', id: channelId });
+      }
+    }
+  }
+
+  if (!channelData?.items?.length) {
+    document.getElementById('channel-results').innerHTML = '<div class="empty-state"><div class="empty-icon">😔</div><div class="empty-title">Channel tidak ditemukan</div></div>';
+    return;
+  }
+
+  const ch = channelData.items[0];
+  const stats = ch.statistics;
+  const sub = parseInt(stats.subscriberCount || 0);
+  const views = parseInt(stats.viewCount || 0);
+  const videos = parseInt(stats.videoCount || 0);
+  const avgViews = videos > 0 ? Math.round(views / videos) : 0;
+
+  // Get recent videos
+  const recentData = await ytFetch('search', { part: 'snippet', channelId: ch.id, type: 'video', maxResults: 6, order: 'date' });
+  
+  // AI Analysis
+  const lang = state.settings.lang === 'id' ? 'Bahasa Indonesia' : 'English';
+  const aiPrompt = `Analisis channel YouTube ini dalam ${lang}:
+Nama: ${ch.snippet.title}
+Subscriber: ${formatNum(sub)}
+Total Views: ${formatNum(views)}
+Total Video: ${videos}
+Rata-rata Views/Video: ${formatNum(avgViews)}
+Deskripsi: ${ch.snippet.description?.substring(0, 200) || 'Tidak ada'}
+
+Berikan analisis singkat tentang: performa channel, kekuatan konten, dan 3 saran untuk meningkatkan channel ini.`;
+
+  const aiAnalysis = await geminiAsk(aiPrompt);
+
+  let html = `
+    <div class="settings-card" style="margin-bottom:14px;">
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:16px;">
+        <img src="${ch.snippet.thumbnails?.medium?.url}" style="width:64px;height:64px;border-radius:50%;border:2px solid var(--accent)">
+        <div>
+          <div style="font-size:18px;font-weight:700;">${ch.snippet.title}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">${ch.snippet.customUrl || ch.id}</div>
+        </div>
+      </div>
+      <div class="dash-grid" style="grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+        <div class="dash-card" style="padding:14px;">
+          <div class="dash-card-label">Subscriber</div>
+          <div class="dash-card-value accent" style="font-size:18px;">${formatNum(sub)}</div>
+        </div>
+        <div class="dash-card" style="padding:14px;">
+          <div class="dash-card-label">Total Views</div>
+          <div class="dash-card-value green" style="font-size:18px;">${formatNum(views)}</div>
+        </div>
+        <div class="dash-card" style="padding:14px;">
+          <div class="dash-card-label">Total Video</div>
+          <div class="dash-card-value blue" style="font-size:18px;">${videos}</div>
+        </div>
+        <div class="dash-card" style="padding:14px;">
+          <div class="dash-card-label">Avg Views</div>
+          <div class="dash-card-value" style="font-size:18px;">${formatNum(avgViews)}</div>
+        </div>
+      </div>
+      <div class="analysis-section">
+        <div class="analysis-title">🤖 Analisis AI</div>
+        <div class="analysis-text">${aiAnalysis}</div>
+      </div>
+    </div>`;
+
+  if (recentData?.items?.length) {
+    const rIds = recentData.items.map(i => i.id.videoId).filter(Boolean).join(',');
+    const rStats = await ytFetch('videos', { part: 'statistics,contentDetails,snippet', id: rIds });
+    if (rStats?.items) {
+      const vids = rStats.items.map(item => ({
+        id: item.id, title: item.snippet.title, channel: item.snippet.channelTitle,
+        thumb: item.snippet.thumbnails?.medium?.url || '', publishedAt: item.snippet.publishedAt,
+        views: item.statistics.viewCount || 0, likes: item.statistics.likeCount || 0,
+        comments: item.statistics.commentCount || 0, duration: parseDuration(item.contentDetails.duration || 'PT0S')
+      }));
+      html += `<div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text2)">VIDEO TERBARU</div>`;
+      html += '<div class="video-grid">' + vids.map(v => renderVideoCard(v)).join('') + '</div>';
+    }
+  }
+
+  document.getElementById('channel-results').innerHTML = html;
+}
+
+// KOMPETITOR
+async function findKompetitor() {
+  const q = document.getElementById('kompetitor-input').value.trim();
+  if (!q) { showToast('Masukkan niche atau topik', true); return; }
+
+  document.getElementById('kompetitor-results').innerHTML = '<div class="loading"><div class="spinner"></div><div>Mencari kompetitor...</div></div>';
+
+  const data = await ytFetch('search', { part: 'snippet', type: 'channel', q, maxResults: 8, order: 'relevance' });
+  if (!data?.items?.length) {
+    document.getElementById('kompetitor-results').innerHTML = '<div class="empty-state"><div class="empty-icon">😔</div><div class="empty-title">Tidak ditemukan</div></div>';
+    return;
+  }
+
+  const ids = data.items.map(i => i.snippet.channelId).join(',');
+  const chData = await ytFetch('channels', { part: 'snippet,statistics', id: ids });
+  if (!chData?.items) return;
+
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;">';
+  chData.items.forEach(ch => {
+    const sub = parseInt(ch.statistics.subscriberCount || 0);
+    const views = parseInt(ch.statistics.viewCount || 0);
+    const vids = parseInt(ch.statistics.videoCount || 0);
+    html += `
+      <div class="dash-card" style="cursor:pointer;" onclick="document.getElementById('channel-input').value='${ch.id}';showPage('channel');analyzeChannel()">
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">
+          <img src="${ch.snippet.thumbnails?.default?.url}" style="width:44px;height:44px;border-radius:50%;">
+          <div>
+            <div style="font-weight:600;font-size:13px;">${ch.snippet.title}</div>
+            <div style="font-size:11px;color:var(--text2);">${formatNum(sub)} subscriber</div>
+          </div>
+        </div>
+        <div class="video-stats">
+          <div class="stat">👁 ${formatNum(views)} views</div>
+          <div class="stat">📹 ${vids} video</div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--accent);">Klik untuk analisis lengkap →</div>
+      </div>`;
+  });
+  html += '</div>';
+  document.getElementById('kompetitor-results').innerHTML = html;
+}
+
+// FAVORITES
+function toggleFavorite(videoId) {
+  const video = state.lastResults.find(v => v.id === videoId);
+  if (!video) return;
+  const idx = state.favorites.findIndex(f => f.id === videoId);
+  if (idx >= 0) {
+    state.favorites.splice(idx, 1);
+    showToast('Dihapus dari favorit');
+  } else {
+    state.favorites.push(video);
+    showToast('Disimpan ke favorit ⭐');
+  }
+  localStorage.setItem('favorites', JSON.stringify(state.favorites));
+  updateStats();
+  const btn = document.getElementById('fav-btn-' + videoId);
+  if (btn) btn.textContent = state.favorites.some(f => f.id === videoId) ? '★ Tersimpan' : '☆ Simpan';
+  renderFavorites();
+}
+
+function renderFavorites() {
+  if (!state.favorites.length) {
+    document.getElementById('favorit-results').innerHTML = '<div class="empty-state"><div class="empty-icon">⭐</div><div class="empty-title">Belum Ada Favorit</div><div class="empty-sub">Simpan video dari hasil pencarian</div></div>';
+    return;
+  }
+  document.getElementById('favorit-results').innerHTML = '<div class="video-grid">' + state.favorites.map(v => renderVideoCard(v, false)).join('') + '</div>';
+}
+
+function clearFavorites() {
+  state.favorites = [];
+  localStorage.setItem('favorites', JSON.stringify([]));
+  updateStats();
+  renderFavorites();
+  showToast('Semua favorit dihapus');
+}
+
+// ANALYSIS MODAL
+async function openAnalysis(videoId) {
+  document.getElementById('modal-analysis').classList.add('open');
+  document.getElementById('modal-analysis-content').innerHTML = '<div class="loading"><div class="spinner"></div><div>Menganalisis dengan AI...</div></div>';
+
+  const data = await ytFetch('videos', { part: 'snippet,statistics,contentDetails', id: videoId });
+  if (!data?.items?.length) {
+    document.getElementById('modal-analysis-content').innerHTML = '<div style="color:var(--text2)">Gagal memuat data video</div>';
+    return;
+  }
+
+  const item = data.items[0];
+  const vph = calcVPH(item.statistics.viewCount, item.snippet.publishedAt);
+  const viral = calcViralScore(vph, item.statistics.viewCount);
+
+  const lang = state.settings.lang === 'id' ? 'Bahasa Indonesia' : 'English';
+  const prompt = `Analisis mendalam video YouTube ini dalam ${lang}:
+
+Judul: ${item.snippet.title}
+Channel: ${item.snippet.channelTitle}
+Views: ${formatNum(item.statistics.viewCount)}
+Likes: ${formatNum(item.statistics.likeCount)}
+Komentar: ${formatNum(item.statistics.commentCount)}
+VPH: ${formatNum(vph)}
+Durasi: ${parseDuration(item.contentDetails.duration)}
+Upload: ${new Date(item.snippet.publishedAt).toLocaleDateString('id-ID')}
+Deskripsi: ${item.snippet.description?.substring(0, 300)}
+Tags: ${item.snippet.tags?.slice(0,10).join(', ') || 'tidak ada'}
+
+Berikan analisis lengkap meliputi:
+1. Kekuatan judul dan thumbnail (perkiraan)
+2. Mengapa video ini viral/tidak viral
+3. Hook yang digunakan di awal
+4. Strategi konten yang bisa dipelajari
+5. Kata kunci utama yang ditarget
+6. Saran jika ingin membuat video serupa`;
+
+  const analysis = await geminiAsk(prompt);
+  state.analyzed++;
+  localStorage.setItem('stat_analyzed', state.analyzed);
+  updateStats();
+
+  document.getElementById('modal-analysis-content').innerHTML = `
+    <div style="display:flex;gap:12px;margin-bottom:16px;align-items:flex-start;">
+      <img src="${item.snippet.thumbnails?.medium?.url}" style="width:120px;border-radius:8px;">
+      <div>
+        <div style="font-weight:600;margin-bottom:6px;line-height:1.4;">${item.snippet.title}</div>
+        <div style="font-size:12px;color:var(--text2);">${item.snippet.channelTitle}</div>
+        <div class="video-stats" style="margin-top:8px;">
+          <div class="stat highlight">👁 ${formatNum(item.statistics.viewCount)}</div>
+          <div class="stat green">⚡ ${formatNum(vph)} VPH</div>
+          <div class="stat">🔥 Viral: ${viral}/100</div>
+        </div>
+      </div>
+    </div>
+    <div class="analysis-section">
+      <div class="analysis-title">🤖 Analisis Gemini AI</div>
+      <div class="analysis-text" style="white-space:pre-wrap;">${analysis}</div>
+    </div>
+    ${item.snippet.tags?.length ? `
+    <div class="analysis-section">
+      <div class="analysis-title">🏷 Tags Video</div>
+      <div class="tag-list">${item.snippet.tags.map(t => `<div class="tag">${t}</div>`).join('')}</div>
+    </div>` : ''}
+    <div style="margin-top:16px;">
+      <a href="https://youtube.com/watch?v=${videoId}" target="_blank" class="btn btn-accent" style="text-decoration:none;display:inline-block;">▶ Tonton di YouTube</a>
+    </div>`;
+}
+
+// TRANSCRIPT MODAL
+async function openTranscript(videoId) {
+  document.getElementById('modal-transcript').classList.add('open');
+  document.getElementById('modal-transcript-content').innerHTML = '<div class="loading"><div class="spinner"></div><div>Memuat transkrip...</div></div>';
+
+  // Get video info first
+  const data = await ytFetch('videos', { part: 'snippet', id: videoId });
+  if (!data?.items?.length) return;
+  const item = data.items[0];
+
+  // Try to get captions list
+  const captionsData = await ytFetch('captions', { part: 'snippet', videoId });
+
+  const lang = state.settings.lang === 'id' ? 'Bahasa Indonesia' : 'English';
+  
+  let content = `
+    <div style="margin-bottom:16px;">
+      <div style="font-weight:600;">${item.snippet.title}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">${item.snippet.channelTitle}</div>
+    </div>`;
+
+  if (captionsData?.items?.length) {
+    const captions = captionsData.items;
+    content += `
+      <div class="analysis-section">
+        <div class="analysis-title">📋 Caption Tersedia</div>
+        <div class="tag-list">
+          ${captions.map(c => `<div class="tag accent">${c.snippet.language} — ${c.snippet.trackKind}</div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  // AI summary of description as proxy
+  const prompt = `Berikan ringkasan konten video YouTube ini dalam ${lang} berdasarkan judul dan deskripsi:
+Judul: ${item.snippet.title}
+Deskripsi: ${item.snippet.description?.substring(0, 500) || 'Tidak ada deskripsi'}
+
+Buat:
+1. Ringkasan isi konten (3-4 kalimat)
+2. Poin-poin utama yang kemungkinan dibahas
+3. Target audiens video ini`;
+
+  const summary = await geminiAsk(prompt);
+
+  content += `
+    <div class="analysis-section">
+      <div class="analysis-title">🤖 Ringkasan AI (dari deskripsi)</div>
+      <div class="analysis-text" style="white-space:pre-wrap;">${summary}</div>
+    </div>
+    <div class="analysis-section">
+      <div class="analysis-title">📄 Deskripsi Asli</div>
+      <div class="transcript-text">${item.snippet.description || 'Tidak ada deskripsi'}</div>
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--text2);">
+      💡 Untuk transkrip lengkap, download ekstensi YouTube Transcript di Chrome
+    </div>`;
+
+  document.getElementById('modal-transcript-content').innerHTML = content;
+}
+
+// MODAL
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// API KEYS
+function saveAPIKeys() {
+  state.ytKey = document.getElementById('yt-api-key').value.trim();
+  state.geminiKey = document.getElementById('gemini-api-key').value.trim();
+  localStorage.setItem('yt_api_key', state.ytKey);
+  localStorage.setItem('gemini_api_key', state.geminiKey);
+  updateAPIStatus();
+  showToast('API Keys berhasil disimpan! ✓');
+}
+
+async function testAPIKeys() {
+  if (!state.ytKey) { showToast('Masukkan YouTube API Key dulu', true); return; }
+  showToast('Menguji koneksi...');
+  const data = await ytFetch('videos', { part: 'snippet', chart: 'mostPopular', maxResults: 1 });
+  if (data?.items) showToast('✓ YouTube API berhasil terhubung!');
+}
+
+function savePengaturan() {
+  state.settings.maxResults = parseInt(document.getElementById('setting-maxresults').value);
+  state.settings.lang = document.getElementById('setting-lang').value;
+  state.settings.vph = document.getElementById('setting-vph').checked;
+  localStorage.setItem('settings', JSON.stringify(state.settings));
+  showToast('Pengaturan disimpan!');
+}
+
+// TOAST
+function showToast(msg, error = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (error ? ' error' : '') + ' show';
+  setTimeout(() => t.className = 'toast' + (error ? ' error' : ''), 3000);
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
